@@ -1,6 +1,5 @@
 package com.smk.dao;
 
-import com.helger.commons.location.ILocation;
 import com.smk.model.Location;
 
 import java.sql.Connection;
@@ -12,11 +11,12 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 public class LocationDao implements Dao<Location, Integer> {
-    private final Optional<Connection> connection;
 
-    public LocationDao(){
+    private final Optional<Connection> connection;
+    public LocationDao() {
         connection = JdbcConnection.getConnection();
     }
+
     @Override
     public Optional<Location> get(int id) {
         return Optional.empty();
@@ -26,7 +26,7 @@ public class LocationDao implements Dao<Location, Integer> {
     public Collection<Location> getAll() {
         Collection<Location> result = new LinkedList<>();
         String sql = "SELECT * from location";
-        connection.ifPresent(connection -> {
+        connection.ifPresent(connection ->{
             try {
                 PreparedStatement ps = connection.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery();
@@ -38,11 +38,12 @@ public class LocationDao implements Dao<Location, Integer> {
                     location.setId(id);
                     location.setName(name);
                     result.add(location);
+
                 }
-            } catch (SQLException e){
-                e.printStackTrace();;
+            }catch (SQLException e) {
+                e.printStackTrace();
             }
-        });
+        } );
         return result;
     }
 
