@@ -9,6 +9,9 @@ public class ScheduleDTO {
     private Date departureDate;
     private String flightNumber;
 
+    public ScheduleDTO() {
+    }
+
     public long getId() {
         return id;
     }

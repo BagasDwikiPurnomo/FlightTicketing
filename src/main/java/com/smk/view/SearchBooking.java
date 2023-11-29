@@ -1,78 +1,60 @@
 package com.smk.view;
 
 import com.smk.MainView;
-import com.smk.model.Booking;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
-import java.time.LocalDate;
 
 @PageTitle("Search Booking")
 @Route(value = "search-booking", layout = MainView.class)
 public class SearchBooking extends VerticalLayout {
 
-    private final TextField flightNumber;
-    private final DatePicker departureDate;
-    private final Button searchButton;
-    private final Grid<Booking> bookingGrid;
-    private final Binder<Booking> binder;
-    private final BookingService bookingService;
+    public SearchBooking() {
+        // Header
+        add(new H1("Search Flights"));
 
-    public SearchBooking(BookingService bookingService) {
-        // Initialize the UI components
-        flightNumber = new TextField("Flight number");
-        departureDate = new DatePicker("Departure date");
-        searchButton = new Button("Search");
-        bookingGrid = new Grid<>(Booking.class);
-        binder = new Binder<>(Booking.class);
+        // Form layout for search criteria
+        FormLayout formLayout = new FormLayout();
+        formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1, FormLayout.ResponsiveStep.LabelsPosition.TOP),
+                new FormLayout.ResponsiveStep("21em", 2, FormLayout.ResponsiveStep.LabelsPosition.TOP));
 
-        // Configure the UI components
-        flightNumber.setRequired(true);
-        departureDate.setRequired(true);
-        searchButton.addClickListener(e -> searchBooking());
-        bookingGrid.setColumns("id", "passengerName", "flightNumber", "departureDate", "seatNumber");
-        bookingGrid.setVisible(false);
+        // Departure city
+        TextField departureCityField = new TextField("Departure City");
+        formLayout.add(departureCityField);
 
-        // Add the UI components to the layout
-        add(flightNumber, departureDate, searchButton, bookingGrid);
+        // Destination city
+        TextField destinationCityField = new TextField("Destination City");
+        formLayout.add(destinationCityField);
 
-        // Initialize the service layer through dependency injection
-        this.bookingService = bookingService;
+        // Departure date
+        DatePicker departureDateField = new DatePicker("Departure Date");
+        formLayout.add(departureDateField);
+
+        // Number of passengers
+        TextField passengersField = new TextField("Passengers");
+        formLayout.add(passengersField);
+
+        // Search button
+        Button searchButton = new Button("Search");
+        searchButton.addClickListener(event -> searchFlights());
+        searchButton.getElement().getStyle().set("width", "100%");
+        formLayout.add(searchButton, 2);
+
+        // Display search results
+        Label searchResultsLabel = new Label();
+        formLayout.add(searchResultsLabel, 2);
+
+        // Add form layout to the main layout
+        add(formLayout);
     }
 
-    private void searchBooking() {
-        // Get the input values
-        String flightNumberValue = flightNumber.getValue();
-        LocalDate departureDateValue = departureDate.getValue();
+    private void searchFlights() {
 
-        // Validate the input values
-        if (flightNumberValue == null || flightNumberValue.isEmpty()) {
-            Notification.show("Please enter a flight number");
-            return;
-        }
-        if (departureDateValue == null) {
-            Notification.show("Please select a departure date");
-            return;
-        }
-
-        // Call the service layer to find the booking
-        Booking booking = bookingService.findBookingByFlightNumberAndDepartureDate(flightNumberValue, departureDateValue);
-
-        // Display the booking details or an error message
-        if (booking != null) {
-            bookingGrid.setItems(booking);
-            bookingGrid.setVisible(true);
-            binder.setBean(booking);
-        } else {
-            Notification.show("No booking found for the given flight number and departure date");
-            bookingGrid.setVisible(false);
-        }
     }
 }
